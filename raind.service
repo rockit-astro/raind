@@ -1,0 +1,15 @@
+[Unit]
+Description=Daemon for exposing an attached rain detector via Pyro.
+After=syslog.target
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Restart=on-failure
+Type=simple
+ExecStart=/usr/bin/env python3 -u /usr/bin/raind
+ExecStartPost=/usr/bin/env python3 -u /usr/bin/obslog info raind Started by systemd
+ExecStopPost=/usr/bin/env python3 -u /usr/bin/obslog info raind Stopped by systemd
+StandardOutput=syslog
+StandardError=syslog
+

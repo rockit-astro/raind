@@ -1,0 +1,92 @@
+#!/usr/bin/env python3
+#
+# This file is part of raind.
+#
+# raind is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# raind is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with raind.  If not, see <http://www.gnu.org/licenses/>.
+
+"""Commandline client for querying the latest measurement from raind"""
+
+import datetime
+import json
+import os
+import sys
+import Pyro4
+import warwick.observatory as observatory
+
+SCRIPT_NAME = os.path.basename(sys.argv[0])
+sys.excepthook = Pyro4.util.excepthook
+
+FMT_RED = u'\033[91m'
+FMT_BOLD = u'\033[1m'
+FMT_CLEAR = u'\033[0m'
+
+def print_status():
+    """Prints the latest weather data in human-readable form"""
+    latest = None
+    try:
+        with observatory.daemons.onemetre_rain.connect() as rain:
+            latest = rain.last_measurement()
+    except Pyro4.errors.CommunicationError:
+        print('error: unable to communicate with the rain daemon')
+        return 1
+
+    if latest is not None:
+        date = datetime.datetime.strptime(latest['date'], '%Y-%m-%dT%H:%M:%SZ')
+        print('Data received ' + FMT_BOLD + str(date) + FMT_CLEAR)
+        print(FMT_BOLD + str(latest['safe_boards']) + FMT_CLEAR + ' of ' + FMT_BOLD \
+              + str(latest['total_boards']) + FMT_CLEAR + ' boards are safe') 
+        print('Port 1 status: {:06b}'.format(latest['port1']))
+
+        print()
+    else:
+        print('error: no data available')
+        return 1
+
+    return 0
+
+def print_json():
+    """Prints the latest environment data in machine-readable form"""
+    latest = None
+    try:
+        with observatory.daemons.onemetre_rain.connect() as rain:
+            latest = rain.last_measurement()
+    except Pyro4.errors.CommunicationError:
+        print('error: unable to communicate with the rain daemon')
+        return 1
+
+    print(json.dumps(latest))
+
+    return 0
+
+def print_usage(name):
+    """Prints the utility help"""
+    print('Usage: {} <command>'.format(name))
+    print()
+    print('   status      print a human-readable summary of the rain detector status')
+    print('   json        print a machine-readable summary of the rain detector status')
+    print()
+    return 1
+
+if __name__ == '__main__':
+    if len(sys.argv) == 1:
+        sys.exit(print_usage(SCRIPT_NAME))
+
+    if sys.argv[1] == 'status':
+        sys.exit(print_status())
+    elif sys.argv[1] == 'json':
+        sys.exit(print_json())
+
+    # Command not found
+    sys.exit(print_usage(SCRIPT_NAME))
+
