@@ -87,13 +87,13 @@ class RainDaemon:
                     if match:
                         # Port 2 is currently unused, so we ignore it
                         port1 = int.from_bytes(match.group('port1'), byteorder='big')
-                        safe_boards = bin(port1).count("1")
+                        unsafe_boards = bin(port1).count("1")
                         total_boards = 6
 
                         latest = {
                             'date': datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
                             'software_version': SOFTWARE_VERSION,
-                            'safe_boards': safe_boards,
+                            'unsafe_boards': unsafe_boards,
                             'total_boards': total_boards,
                             'port1': port1,
                         }

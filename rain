@@ -44,8 +44,8 @@ def print_status():
     if latest is not None:
         date = datetime.datetime.strptime(latest['date'], '%Y-%m-%dT%H:%M:%SZ')
         print('Data received ' + FMT_BOLD + str(date) + FMT_CLEAR)
-        print(FMT_BOLD + str(latest['safe_boards']) + FMT_CLEAR + ' of ' + FMT_BOLD \
-              + str(latest['total_boards']) + FMT_CLEAR + ' boards are safe') 
+        print(FMT_BOLD + str(latest['unsafe_boards']) + FMT_CLEAR + ' of ' + FMT_BOLD \
+              + str(latest['total_boards']) + FMT_CLEAR + ' boards detect water')
         print('Port 1 status: {:06b}'.format(latest['port1']))
 
         print()
