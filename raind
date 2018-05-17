@@ -91,10 +91,11 @@ class RainDaemon:
 
                     if match:
                         # Port 2 is currently unused, so we ignore it
+                        # Have hacked in the new sensor to channel 1
+                        # Other channels are disconnected, so ignore them
                         port1 = int.from_bytes(match.group('port1'), byteorder='big')
-                        unsafe_boards = bin(port1).count("1")
-                        total_boards = 6
-
+                        unsafe_boards = 1 if port1 & 0x1 == 0x1 else 0
+                        total_boards = 1
                         latest = {
                             'date': datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
                             'software_version': SOFTWARE_VERSION,
