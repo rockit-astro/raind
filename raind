@@ -29,7 +29,7 @@ import serial
 from warwick.observatory.common import daemons, log
 
 # Set automatically when generating RPM package
-SOFTWARE_VERSION = " (git-72f2534)"
+SOFTWARE_VERSION = "UNKNOWN"
 
 SERIAL_PORT = '/dev/raindetector'
 SERIAL_BAUD = 9600
@@ -67,7 +67,7 @@ class RainDaemon:
                 print(exception)
                 print('Will retry in 10 seconds...')
                 if not self._port_error:
-                    log.error('vaisalad', 'Failed to connect to rain detector')
+                    log.error('raind', 'Failed to connect to rain detector')
 
                 self._port_error = True
 
@@ -90,12 +90,11 @@ class RainDaemon:
                     match = self._regex.match(data)
 
                     if match:
-                        # Port 2 is currently unused, so we ignore it
-                        # Have hacked in the new sensor to channel 1
-                        # Other channels are disconnected, so ignore them
-                        port1 = int.from_bytes(match.group('port1'), byteorder='big')
-                        unsafe_boards = 1 if port1 & 0x1 == 0x1 else 0
-                        total_boards = 1
+                        # Only using the lowest 3 bits in port 1
+                        # Port 2 is completely unused
+                        port1 = int.from_bytes(match.group('port1'), byteorder='big') & 0x7
+                        unsafe_boards = bin(port1).count("1")
+                        total_boards = 3
                         latest = {
                             'date': datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
                             'software_version': SOFTWARE_VERSION,

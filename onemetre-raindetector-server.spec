@@ -1,5 +1,5 @@
 Name:      onemetre-raindetector-server
-Version:   2.2
+Version:   2.3
 Release:   0
 Url:       https://github.com/warwick-one-metre/raind
 Summary:   Rain detector daemon for the Warwick one-metre telescope.
