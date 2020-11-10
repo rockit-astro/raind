@@ -78,6 +78,7 @@ def print_usage(name):
     print()
     return 1
 
+
 if __name__ == '__main__':
     if len(sys.argv) == 1:
         sys.exit(print_usage(SCRIPT_NAME))

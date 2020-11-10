@@ -11,8 +11,7 @@ all:
 	mkdir -p build
 	cp raind raind.bak
 	awk '{sub("SOFTWARE_VERSION = .*$$","SOFTWARE_VERSION = \"$(SERVER_VERSION) ($(GIT_VERSION))\""); print $0}' raind.bak > raind
-	${RPMBUILD} -ba onemetre-raindetector-server.spec
-	${RPMBUILD} -ba onemetre-raindetector-client.spec
+	${RPMBUILD} -ba observatory-raindetector-client.spec
 	mv build/noarch/*.rpm .
 	rm -rf build
 	mv raind.bak raind
