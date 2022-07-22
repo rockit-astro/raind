@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.6
+#!/usr/bin/env python3
 #
 # This file is part of raind.
 #
@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with raind.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Rain detector daemon for the Warwick one-metre telescope"""
+"""Rain detector daemon for the Warwick La Palma telescopes"""
 
 # pylint: disable=broad-except
 # pylint: disable=invalid-name

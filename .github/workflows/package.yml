@@ -1,0 +1,45 @@
+name: RPM Packaging
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  linux:
+    name: RPM Packaging
+    runs-on: ubuntu-22.04
+    container: rockylinux:9
+    steps:
+      - name: Install Dependencies
+        run: |
+          cat /etc/redhat-release
+          dnf -y install 'dnf-command(config-manager)'
+          dnf -y config-manager --set-enabled crb
+          dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm https://dl.fedoraproject.org/pub/epel/epel-next-release-latest-9.noarch.rpm
+          yum -y install git rpm-build rpm-sign rsync make python3-rpm-macros python3-devel
+
+      - name: Clone Repository
+        uses: actions/checkout@v2
+
+      - name: Clone Package Repository
+        uses: actions/checkout@v2
+        with:
+          repository: warwick-one-metre/rocky-packages
+          token: ${{ secrets.DEPLOY_TOKEN }}
+          path: rocky-packages
+
+      - name: Set Package Versions
+        run: |
+          # Set the spec Revision field to <latest in repo> + 1
+          rocky-packages/set-spec-release.sh observatory-raindetector-client.spec
+
+      - name: Package RPMs
+        run:
+          make
+
+      - name: Push Packages
+        env:
+          RPM_SIGNING_KEY: ${{ secrets.RPM_SIGNING_KEY }}
+        run: |
+          rocky-packages/sign-and-push-packages.sh *.rpm
